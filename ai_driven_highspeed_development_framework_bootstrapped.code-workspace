@@ -1,0 +1,14 @@
+{
+	"folders": [
+	    { "path": "./utils/logger_util" },
+	    { "path": "./managers/config_manager" },
+	    { "path": "." }
+	],
+	"settings": {
+		"python.analysis.extraPaths": [
+			"../../../",
+			"../../",
+			"../",
+		]
+	}
+}

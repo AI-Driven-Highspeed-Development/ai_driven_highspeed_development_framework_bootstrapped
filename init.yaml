@@ -1,0 +1,6 @@
+name: Default Template Set
+description: The rawest form of freedom with minimal things in it.
+modules:
+- https://github.com/AI-Driven-Highspeed-Development/Config-Manager.git
+- https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git
+template_repo: https://github.com/AI-Driven-Highspeed-Development/Default-Project-Template.git
