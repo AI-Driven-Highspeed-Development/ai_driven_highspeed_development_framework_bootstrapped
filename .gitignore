@@ -214,4 +214,7 @@ utils/
 plugins/
 .adhd_clone_tmp/
 
+temp_test/
+temp_debug/
+
 .config.backup

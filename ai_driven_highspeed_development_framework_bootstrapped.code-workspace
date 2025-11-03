@@ -1,6 +1,8 @@
 {
 	"folders": [
 	    { "path": "./utils/logger_util" },
+	    { "path": "./cores/github_api_core" },
+	    { "path": "./managers/temp_files_manager" },
 	    { "path": "./managers/config_manager" },
 	    { "path": "." }
 	],

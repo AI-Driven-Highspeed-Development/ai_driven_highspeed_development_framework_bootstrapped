@@ -3,4 +3,6 @@ description: The rawest form of freedom with minimal things in it.
 modules:
 - https://github.com/AI-Driven-Highspeed-Development/Config-Manager.git
 - https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git
+- https://github.com/AI-Driven-Highspeed-Development/github_api_core.git
+- https://github.com/AI-Driven-Highspeed-Development/temp_files_manager.git
 template_repo: https://github.com/AI-Driven-Highspeed-Development/Default-Project-Template.git

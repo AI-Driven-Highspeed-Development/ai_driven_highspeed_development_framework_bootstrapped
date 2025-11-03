@@ -1,10 +1,11 @@
 # ADHD Framework Agent Instructions (Concise)
 
 ## Project overview
-- Directories: `framework/` (core), `project/` (app code), `managers/`, `utils/`, `plugins/`, `mcps/` (4 types of modules)
+- Directories: `framework/` (old core that we still using during current bootstrapping), `project/` (app code), `cores/` (new core modules we transition to), `managers/`, `utils/`, `plugins/`, `mcps/` (4 types of modules)
 - Entry points: `adhd_cli.py` (framework CLI), `app.py` (application for the specific project)
 - Module files: `__init__.py`, `init.yaml`, optional `.config_template` (JSON), optional `refresh.py`
-- Module types: `manager`, `plugin`, `util`, `mcp`
+- Module types: `core`, `manager`, `plugin`, `util`, `mcp`
+- Temporary folder: `temp_test/` for testing, `temp_debug/` for debugging
 
 ## Agent response lifecycle (always use these headings)
 1) Initial
@@ -39,7 +40,7 @@
 
 ## Key workflows (general across ADHD projects)
 - Project ops via `adhd_cli.py` (init/refresh/upgrade/install); use `--help` to discover commands
-- Modules live under `managers/`, `plugins/`, `utils/`, `mcps/`; import via package paths under `project/`
+- Modules live under `cores/`, `managers/`, `plugins/`, `utils/`, `mcps/`; import via package paths under `project/`
 
 ## Agent defaults
 - OOP; minimal docstrings, always include type hints

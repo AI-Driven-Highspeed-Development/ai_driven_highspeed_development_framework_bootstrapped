@@ -40,7 +40,7 @@ class ModulesController:
     """Controller for managing and providing information about project modules."""
     
     def __init__(self):
-        self.base_dirs = ["managers", "utils", "plugins", "mcps"]
+        self.base_dirs = ["managers", "utils", "plugins", "mcps", "cores"]
         self.modules_info: Dict[str, ModuleInfo] = {}
         self._scan_modules()
     
