@@ -1,4 +1,4 @@
-# ADHD Framework Agent Instructions (Concise)
+# ADHD Framework General Agent Instructions
 
 ## Project overview
 - Directories: `framework/` (old core that we still using during current bootstrapping), `project/` (app code), `cores/` (new core modules we transition to), `managers/`, `utils/`, `plugins/`, `mcps/` (4 types of modules)
@@ -19,7 +19,6 @@
 
 2) Planning
 - Suggest Plan: concise steps
-- Workspace Awareness: verify target paths and module placement
 - Read Source Code as needed
 
 3) Implementation
@@ -43,6 +42,9 @@
 - Modules live under `cores/`, `managers/`, `plugins/`, `utils/`, `mcps/`; import via package paths under `project/`
 
 ## Agent defaults
-- OOP; minimal docstrings, always include type hints
-- No rapid prototyping; legacy compatibility off
-- Auto Demo/Testing/Debugging/Documentation off
+- OOP;
+- minimal docstrings;
+- always include type hints;
+- No rapid prototyping;
+- No need backward compatibility unless specified;
+- Auto Demo/Testing/Debugging/Documentation: off

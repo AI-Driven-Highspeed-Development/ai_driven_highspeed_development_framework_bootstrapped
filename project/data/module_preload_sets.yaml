@@ -1,0 +1,16 @@
+always:
+  - https://github.com/AI-Driven-Highspeed-Development/Config-Manager.git
+  - https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git
+
+options:
+  Default:
+    description: The rawest form of freedom with minimal things in it.
+    urls: []
+  Webcams:
+    description: Webcam control modules
+    urls:
+      - https://github.com/AI-Driven-Highspeed-Development/Webcam-Plugin.git
+  Comfyui:
+    description: Comfyui API
+    urls:
+      - https://github.com/AI-Driven-Highspeed-Development/ComfyUI-Plugin.git

@@ -6,4 +6,5 @@ modules:
 - https://github.com/AI-Driven-Highspeed-Development/github_api_core.git
 - https://github.com/AI-Driven-Highspeed-Development/temp_files_manager.git
 - https://github.com/AI-Driven-Highspeed-Development/yaml_reading_core.git
+- https://github.com/AI-Driven-Highspeed-Development/project_creator_core.git
 template_repo: https://github.com/AI-Driven-Highspeed-Development/Default-Project-Template.git

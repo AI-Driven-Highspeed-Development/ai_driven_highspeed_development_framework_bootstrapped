@@ -1,5 +1,5 @@
 ---
-applyTo: "project/**,app.py,managers/**,plugins/**,utils/**,mcps/**"
+applyTo: "project/**,app.py,managers/**,plugins/**,utils/**,mcps/**,cores/**"
 ---
 
 Config Manager:
@@ -11,5 +11,5 @@ cm = ConfigManager()
 config = cm.config.my_module_name
 data_path = config.paths.data
 ```
-- Update config: run `python adhd_cli.py refresh --module config-manager` to regenerate code after modifying .config, can omit `--module` to refresh all modules for convenience.
+- Update config: run `python adhd_cli.py refresh --module config-manager` to regenerate code after modifying .config, can omit `--module` to refresh all for convenience, remind user for manually sync instead of done by AI agent.
 - <module_type>/<module_name>/.config_template: defines default config schema auto-generated into .config on module init. refresh after edits will not overwrite user changes to prevent data loss, manual sync to .config before refresh maybe needed.
