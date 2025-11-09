@@ -1,5 +1,5 @@
 ---
-applyTo: "managers/**,plugins/**,utils/**,mcps/**,cores/**"
+applyTo: "managers/**,plugins/**,utils/**,mcps/**"
 ---
 
 Shared module guidance (all module types).
@@ -10,7 +10,6 @@ Module assets:
 - Optional `.config_template` (JSON) – default config schema Config-Manager materializes into `.config`.
 - Optional `refresh.py` – idempotent refresh/update invoked by `python adhd_cli.py refresh`.
 - Optional `<module_name>.instructions.md` – module-specific AI agent instructions auto-cloned to `.github/instructions/`.
-- Optional `requirements.txt` – Python dependencies from PyPI; NOTE: module-specific PyPI deps only, don't put PyPI deps into init.yaml, also don't put ADHD module deps here.
 
 Entry points:
 - Expose focused APIs via standalone modules (e.g., `[module_name].py`) or small packages importable by other modules or `app.py`.
