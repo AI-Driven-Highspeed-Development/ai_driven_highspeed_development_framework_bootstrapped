@@ -1,5 +1,0 @@
-name: my-project
-description: ''
-modules:
-- https://github.com/AI-Driven-Highspeed-Development/Config-Manager.git
-- https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git

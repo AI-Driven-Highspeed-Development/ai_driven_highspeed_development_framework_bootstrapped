@@ -48,4 +48,5 @@
 - always include type hints;
 - No rapid prototyping;
 - No need backward compatibility unless specified;
-- Auto Demo/Testing/Debugging/Documentation: off
+- No auto Demo/Testing/Debugging/Documentation.
+- No pytest needed.
