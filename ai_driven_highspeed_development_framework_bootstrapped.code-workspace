@@ -5,6 +5,7 @@
 	    { "path": "./cores/project_creator_core" },
 	    { "path": "./cores/yaml_reading_core" },
 	    { "path": "./cores/modules_controller_core" },
+	    { "path": "./cores/workspace_core" },
 	    { "path": "./cores/exceptions_core" },
 	    { "path": "./cores/module_creator_core" },
 	    { "path": "./cores/creator_common_core" },

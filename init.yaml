@@ -13,5 +13,6 @@ modules:
 - https://github.com/AI-Driven-Highspeed-Development/exceptions_core.git
 - https://github.com/AI-Driven-Highspeed-Development/modules_controller_core.git
 - https://github.com/AI-Driven-Highspeed-Development/project_init_core.git
+- https://github.com/AI-Driven-Highspeed-Development/workspace_core.git
 
 template_repo: https://github.com/AI-Driven-Highspeed-Development/Default-Project-Template.git
