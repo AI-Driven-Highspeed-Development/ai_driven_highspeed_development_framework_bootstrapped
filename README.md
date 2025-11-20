@@ -1,20 +1,176 @@
-# Default Project Template for AI Driven Highspeed Development Framework
+# ADHD Framework (Bootstrapped)
 
-This is the default project template that gets cloned when creating new ADHD Framework projects.
+This is the bootstrapped version of the ADHD (AI-Driven High-speed Development) Framework, featuring a modular core architecture.
 
 ## Structure
 
 ```
-📦 Default-Project-Template/
-├── 📄 adhd_cli.py              # Main CLI interface for project management
-├── 📄 init.yaml                # Default module configuration
-├── 📁 framework/               # Core framework modules
-│   ├── 📄 __init__.py         # Package initialization
-│   ├── 📄 modules_control.py  # Module discovery and management
-│   ├── 📄 project_init.py     # Project initialization logic
-│   └── 📄 project_refresh.py  # Module refresh functionality
-└── 📄 README.md               # This file
+📦 Project-Root/
+├── 📄 adhd_framework.py        # Main CLI interface
+├── 📄 init.yaml                # Project configuration
+├── 📁 cores/                   # Core system modules
+│   ├── 📁 project_init_core/   # Project initialization & cloning
+│   ├── 📁 modules_controller_core/ # Module management
+│   └── ...
+├── 📁 managers/                # State & Config managers
+├── 📁 utils/                   # Utility modules
+├── 📁 plugins/                 # Plugin modules
+└── 📄 README.md                # This file
 ```
+
+## Usage
+
+The framework is controlled via the `adhd_framework.py` script.
+
+### Project Creation
+```bash
+python adhd_framework.py create-project    # Interactive wizard (alias: cp)
+```
+
+### Module Creation
+```bash
+python adhd_framework.py create-module     # Interactive wizard (alias: cm)
+```
+
+### Initialize Project
+```bash
+python adhd_framework.py init              # Initialize modules from init.yaml (alias: i)
+```
+
+### Manage Modules
+```bash
+python adhd_framework.py list              # List all discovered modules (alias: ls)
+python adhd_framework.py refresh           # Refresh all modules (alias: r)
+python adhd_framework.py refresh -m logger # Refresh specific module
+python adhd_framework.py info -m logger    # Show module details (alias: in)
+```
+
+### Dependency Management
+```bash
+python adhd_framework.py req               # Install all requirements.txt files (alias: rq)
+```
+
+### Get Help
+```bash
+python adhd_framework.py --help            # Show main help
+python adhd_framework.py init --help       # Show init command help
+```
+
+## Core Modules
+
+- **project_init_core**: Handles project bootstrapping, cloning, and dependency resolution.
+- **modules_controller_core**: Central registry for discovering and managing modules.
+- **requirements_installer**: Finds and installs `requirements.txt` files across the project.
+- **project_creator_core**: Logic for creating new projects.
+- **module_creator_core**: Logic for scaffolding new modules.
+
+## Module Structure
+
+Each module should follow this structure:
+```
+📁 module-name/
+├── 📄 __init__.py     # Python package (optional, enables ✅ Init)
+├── 📄 refresh.py      # Refresh script (optional, enables 🔄 Refresh)  
+├── 📄 init.yaml       # Module configuration
+└── 📄 [other files]   # Module-specific files
+```
+
+The `init.yaml` file should contain:
+```yaml
+name: "Module Name"
+type: "module_type"  # e.g., "manager", "util", "plugin", "core"
+version: "1.0.0"
+description: "Module description"
+repo_url: "https://github.com/user/repo.git"
+requirements:  # Dependencies (optional)
+  - "requests"
+shows_in_workspace: true # Override default visibility
+```
+
+## Features
+
+- 🚀 **Project Initialization**: Automatically clone and set up project modules from git repositories.
+- 🔄 **Module Refresh**: Update and refresh existing modules with new versions.
+- 📦 **Module Management**: Discover, list, and manage project modules.
+- ⚙️ **Configuration-Driven**: YAML-based configuration for easy customization.
+- 🧱 **Requirements Management**: Auto-discovery and installation of Python dependencies.
+
+## Quick Start
+
+### Using the CLI
+
+The ADHD CLI provides a simple interface to all framework functionality:
+
+```bash
+# Initialize a new project
+python adhd_framework.py init
+
+# List all discovered modules
+python adhd_framework.py ls
+
+# Refresh all modules
+python adhd_framework.py r
+
+# Refresh specific module
+python adhd_framework.py r -m config-manager
+
+# Show detailed module information
+python adhd_framework.py in -m config-manager
+
+# Install requirements
+python adhd_framework.py rq
+```
+
+## Configuration
+
+Create an `init.yaml` file in your project root to specify modules to install:
+
+```yaml
+modules:
+  - https://github.com/AI-Driven-Highspeed-Development/Config-Manager.git
+  - https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git
+```
+
+## CLI Commands
+
+### `create-project` (cp)
+Launch the interactive wizard to create a new ADHD project.
+
+### `create-module` (cm)
+Launch the interactive wizard to create a new module from templates.
+
+### `init` (i)
+Initialize a new ADHD project by cloning and setting up modules from the configuration file.
+
+### `refresh` (r)
+Refresh project modules to update them with the latest changes.
+
+**Options:**
+- `--module, -m`: Refresh specific module by name
+
+### `list` (ls)
+List all discovered modules and their capabilities.
+
+### `info` (in)
+Show detailed information about a specific module.
+
+**Options:**
+- `--module, -m`: Module name to show information for (required)
+
+### `req` (rq)
+Install requirements from all `requirements.txt` files found in the project and its modules.
+
+## Troubleshooting
+
+### Import Errors
+If you encounter import errors, ensure you're running commands from the project root directory where `adhd_framework.py` is located.
+
+### Module Not Found
+Use `python adhd_framework.py ls` to see available modules and their exact names.
+
+## License
+
+See LICENSE file for details.
 
 ## Usage
 

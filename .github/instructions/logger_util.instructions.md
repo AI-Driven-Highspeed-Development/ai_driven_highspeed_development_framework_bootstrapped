@@ -1,5 +1,5 @@
 ---
-applyTo: "project/**,managers/**,plugins/**,utils/**,mcps/**,cores/**,app.py"
+applyTo: "project/**,managers/**,plugins/**,utils/**,mcps/**,cores/**,**.py"
 ---
 
 Logger Util:

@@ -1,5 +1,5 @@
 ---
-applyTo: "project/**,app.py,managers/**,plugins/**,utils/**,mcps/**,cores/**"
+applyTo: "project/**,managers/**,plugins/**,utils/**,mcps/**,cores/**,**.py"
 ---
 
 Config Manager:

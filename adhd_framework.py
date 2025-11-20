@@ -1,11 +1,64 @@
 import sys
+import os
+import subprocess
+import argparse
+from pathlib import Path
+
+# -----------------------------------------------------------------------------
+# Self-Bootstrapping Logic
+# -----------------------------------------------------------------------------
+BOOTSTRAP_MODULES = {
+    "utils/logger_util": "https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git",
+    "managers/config_manager": "https://github.com/AI-Driven-Highspeed-Development/Config-Manager.git",
+    "cores/exceptions_core": "https://github.com/AI-Driven-Highspeed-Development/exceptions_core.git",
+    "cores/yaml_reading_core": "https://github.com/AI-Driven-Highspeed-Development/yaml_reading_core.git",
+    "cores/modules_controller_core": "https://github.com/AI-Driven-Highspeed-Development/modules_controller_core.git",
+    "managers/temp_files_manager": "https://github.com/AI-Driven-Highspeed-Development/temp_files_manager.git",
+    "cores/github_api_core": "https://github.com/AI-Driven-Highspeed-Development/github_api_core.git",
+    "cores/creator_common_core": "https://github.com/AI-Driven-Highspeed-Development/creator_common_core.git",
+    "cores/questionary_core": "https://github.com/AI-Driven-Highspeed-Development/questionary_core.git",
+    "cores/project_init_core": "https://github.com/AI-Driven-Highspeed-Development/project_init_core.git",
+}
+
+def bootstrap():
+    """
+    Ensures that essential modules are present.
+    If not, it clones them from the repositories.
+    """
+    missing_modules = []
+    for path_str, repo_url in BOOTSTRAP_MODULES.items():
+        path = Path(path_str)
+        if not path.exists():
+            missing_modules.append((path, repo_url))
+    
+    if not missing_modules:
+        return
+
+    print("🚀 Bootstrapping ADHD Framework...")
+    print(f"Found {len(missing_modules)} missing essential modules.")
+
+    for path, repo_url in missing_modules:
+        print(f"  - Cloning {path}...")
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            subprocess.check_call(
+                ["git", "clone", repo_url, str(path)],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            print(f"    ✅ Cloned {path}")
+        except Exception as e:
+            print(f"    ❌ Error bootstrapping {path}: {e}")
+            sys.exit(1)
+            
+    print("✅ Bootstrap complete. Starting Framework...\n")
+
+bootstrap()
 
 from managers.config_manager import ConfigManager
 from utils.logger_util.logger import Logger
 from cores.github_api_core.api import GithubApi
 from cores.questionary_core.questionary_core import QuestionaryCore
-from cores.project_creator_core.project_creation_wizard import run_project_creation_wizard
-from cores.module_creator_core.module_creation_wizard import run_module_creation_wizard
 
 
 class ADHDFramework:
@@ -24,22 +77,145 @@ class ADHDFramework:
             sys.exit(1)
 
     def run(self):
-        self.logger.info("Running ADHD Framework...")
-        # Enter project creation flow
-        self.create_project_proc()
+        parser = argparse.ArgumentParser(
+            description="ADHD Framework CLI - AI-Driven High-speed Development Framework",
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+        )
+        subparsers = parser.add_subparsers(dest='command', help='Available commands')
 
-    def create_project_proc(self) -> None:
+        # Create Project
+        create_project_parser = subparsers.add_parser('create-project', aliases=['cp'], help='Create a new ADHD project')
+        create_project_parser.set_defaults(func=self.create_project_proc)
+
+        # Create Module
+        create_module_parser = subparsers.add_parser('create-module', aliases=['cm'], help='Create a new module')
+        create_module_parser.set_defaults(func=self.create_module_proc)
+
+        # Init
+        init_parser = subparsers.add_parser('init', aliases=['i'], help='Initialize project modules')
+        init_parser.set_defaults(func=self.init_project)
+
+        # Refresh
+        refresh_parser = subparsers.add_parser('refresh', aliases=['r'], help='Refresh project modules')
+        refresh_parser.add_argument('--module', '-m', help='Refresh specific module by name')
+        refresh_parser.set_defaults(func=self.refresh_project)
+
+        # List
+        list_parser = subparsers.add_parser('list', aliases=['ls'], help='List all discovered modules')
+        list_parser.set_defaults(func=self.list_modules)
+
+        # Info
+        info_parser = subparsers.add_parser('info', aliases=['in'], help='Show detailed module information')
+        info_parser.add_argument('--module', '-m', required=True, help='Module name to show information for')
+        info_parser.set_defaults(func=self.show_module_info)
+
+        # Req
+        req_parser = subparsers.add_parser('req', aliases=['rq'], help='Install requirements from all requirements.txt files')
+        req_parser.set_defaults(func=self.install_requirements)
+
+        args = parser.parse_args()
+
+        if not args.command:
+            parser.print_help()
+            return
+
+        if hasattr(args, 'func'):
+            args.func(args)
+
+    def create_project_proc(self, args) -> None:
+        from cores.project_creator_core.project_creation_wizard import run_project_creation_wizard
         run_project_creation_wizard(
             prompter=self.prompter,
             logger=self.logger,
         )
 
-    def create_module_proc(self) -> None:
+    def create_module_proc(self, args) -> None:
         """Enter the interactive module creation flow with templates."""
+        from cores.module_creator_core.module_creation_wizard import run_module_creation_wizard
         run_module_creation_wizard(
             prompter=self.prompter,
             logger=self.logger,
         )
+
+    def init_project(self, args) -> None:
+        """Initialize project modules."""
+        self.logger.info("Initializing project...")
+        try:
+            from cores.project_init_core.project_init import ProjectInit
+            initializer = ProjectInit()
+            initializer.init_project()
+            self.logger.info("✅ Project initialization completed successfully!")
+        except Exception as e:
+            self.logger.error(f"❌ Project initialization failed: {e}")
+            sys.exit(1)
+
+    def refresh_project(self, args) -> None:
+        """Refresh project modules."""
+        from cores.modules_controller_core.modules_controller import ModulesController
+        controller = ModulesController()
+        if args.module:
+            self.logger.info(f"Refreshing module: {args.module}")
+            module = controller.get_module_by_name(args.module)
+            if module:
+                controller.run_module_refresh_script(module)
+                self.logger.info(f"✅ Module {args.module} refreshed!")
+            else:
+                self.logger.error(f"❌ Module {args.module} not found.")
+                sys.exit(1)
+        else:
+            self.logger.info("Refreshing all modules...")
+            report = controller.list_all_modules()
+            for module in report.modules:
+                if module.has_refresh_script():
+                    controller.run_module_refresh_script(module)
+            self.logger.info("✅ Project refresh completed!")
+
+    def list_modules(self, args) -> None:
+        """List all modules."""
+        from cores.modules_controller_core.modules_controller import ModulesController
+        controller = ModulesController()
+        report = controller.list_all_modules()
+        
+        print(f"\n📦 Found {len(report.modules)} modules:")
+        for module in report.modules:
+            status = "⚠️ " if module.issues else "✅"
+            print(f"  {status} {module.name} ({module.module_type.name}) - v{module.version}")
+            if module.issues:
+                for issue in module.issues:
+                    print(f"     - {issue.message}")
+
+    def show_module_info(self, args) -> None:
+        """Show module info."""
+        from cores.modules_controller_core.modules_controller import ModulesController
+        controller = ModulesController()
+        module = controller.get_module_by_name(args.module)
+        
+        if not module:
+            self.logger.error(f"❌ Module '{args.module}' not found")
+            sys.exit(1)
+
+        print(f"\n📦 MODULE INFORMATION: {module.name}")
+        print(f"  📁 Path: {module.path}")
+        print(f"  📂 Type: {module.module_type.name}")
+        print(f"  🏷️  Version: {module.version}")
+        print(f"  🔗 Repo URL: {module.repo_url or 'N/A'}")
+        
+        reqs = ", ".join(module.requirements) if module.requirements else "None"
+        print(f"  🧱 Requirements: {reqs}")
+        
+        print(f"  🔄 Has Refresh Script: {'Yes' if module.has_refresh_script() else 'No'}")
+        print(f"  🚀 Has Initializer: {'Yes' if module.has_initializer() else 'No'}")
+        
+        if module.issues:
+            print("  ⚠️  Issues:")
+            for issue in module.issues:
+                print(f"    - {issue.message}")
+
+    def install_requirements(self, args) -> None:
+        """Install requirements."""
+        from cores.project_init_core.requirements_installer import RequirementsInstaller
+        installer = RequirementsInstaller()
+        installer.install_all()
 
 
 if __name__ == "__main__":
