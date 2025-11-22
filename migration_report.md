@@ -1,74 +1,56 @@
 # ADHD Framework Migration Report
 
-This report compares the functionality of the legacy `framework/` directory with the new modularized core system (`cores/`, `managers/`, etc.) and identifies unimplemented functionality.
+This report compares the functionality of the legacy "Genesis" project (`~/PublicRepo/ADHD-Framework/AI-Driven-Highspeed-Development-Framework/`) with the new Bootstrapped Framework (`.`).
 
-## 1. Missing Functionality
+## 1. Migration Scope
 
-The following features exist in the legacy framework but are currently missing or incomplete in the new modules:
+The Legacy Genesis project was a standalone CLI tool used to create ADHD projects. It was **not** an ADHD project itself.
+The New Bootstrapped Framework is a self-hosting ADHD project that contains the core logic to create and manage other projects (and itself).
 
-### A. Automatic Requirements Installation
-- **Legacy (`framework/install_requirements.py`)**: Scans the entire project for `requirements.txt` files and installs them using `pip`.
-- **New System**: `cores/project_init_core/requirements_installer.py` implements this functionality.
-- **Status**: ✅ Implemented
+## 2. Missing Functionality (From Legacy Genesis)
 
-### B. Project Refresh Mechanism
-- **Legacy (`framework/project_refresh.py`)**: Scans for modules with a `refresh.py` script and executes them. This is used to update module configurations or state.
-- **New System**: `cores/modules_controller_core` now supports `refresh.py` discovery and execution via `run_module_refresh_script`.
-- **Status**: ✅ Implemented
+The following features existed in the Legacy Genesis CLI but are currently missing in the new system:
 
-### C. Framework Upgrade System
-- **Legacy (`framework/upgrade.py`)**: Handles self-updating of the framework by cloning the template repository, backing up current files, and replacing the `framework/` directory and CLI tools.
-- **New System**: No equivalent core module exists.
-- **Status**: ⚪ Deprecated (Superseded by Module System)
-- **Reason**: Users/Devs can now update individual modules via `git pull` or the module management tools, making a monolithic framework upgrade unnecessary.
-
-### D. Instructions Cloning
-- **Legacy (`framework/project_init.py`)**: Automatically finds `*.instructions.md` files in cloned modules and copies them to `.github/instructions/` for AI context.
-- **New System**: `cores/project_init_core` clones the modules but does **not** copy the instruction files to the central `.github` location.
+### A. Remote Module Listing
+- **Legacy (`framework/listing.py`)**: Fetched and displayed available modules from `listing_public.yaml` and `listing_private.yaml` (remote repositories).
+- **New System**: `adhd_framework.py list` only lists **locally installed** modules via `cores/modules_controller_core`.
 - **Status**: 🔴 Unimplemented
+- **Impact**: Users cannot discover new modules to install via the CLI yet.
 
-### E. Version Checking & Updating during Init
-- **Legacy (`framework/project_init.py`)**: When initializing, if a module already exists, it compares the local version with the remote version (from `init.yaml`) and updates it if the remote is newer.
-- **New System**: `cores/project_init_core/modules_cloner.py` simply skips cloning if the destination directory already exists.
-- **Status**: ⚪ Deprecated (Superseded by Git)
-- **Reason**: Git is the source of truth for versions.
-- **Future Consideration**: We may add branch/tag selection to `init.yaml` in the future to allow pinning specific versions (e.g., for breaking changes), but this is not currently planned.
+### B. Automatic Virtual Environment Management
+- **Legacy (`framework/venv_ensurer.py`)**: Automatically created and activated a `.adhd-venv` virtual environment.
+- **New System**: Relies on the user or IDE to manage the Python environment.
+- **Status**: ⚪ Deprecated (Intentional)
+- **Reason**: Explicit environment management is preferred in modern development workflows (VS Code, Poetry, Conda, etc.).
 
-### F. Explicit SSH Configuration
-- **Legacy (`framework/project_init.py`)**: Had explicit handling for `ADHD_USE_SSH` and `ADHD_SSH_KEY` environment variables to configure Git SSH access.
-- **New System**: Relies on the underlying system's Git configuration via `cores/github_api_core`.
-- **Status**: ⚪ Deprecated (Superseded by GitHub CLI/System Git)
-- **Reason**: The `gh` CLI and system-level Git configuration handle authentication securely and effectively, removing the need for custom SSH key handling in the framework.
-
-## 2. Feature Mapping Summary
+## 3. Feature Mapping (Legacy Genesis -> New Cores)
 
 | Feature | Legacy Component | New Component | Status |
 | :--- | :--- | :--- | :--- |
-| **Project Initialization** | `framework/project_init.py` | `cores/project_init_core` | ✅ Implemented |
-| **Module Management** | `framework/modules_control.py` | `cores/modules_controller_core` | ✅ Implemented |
-| **YAML Handling** | `framework/yaml_util.py` | `cores/yaml_reading_core` | ✅ Implemented |
-| **Logging/Formatting** | `framework/cli_format.py` | `utils/logger_util` | ✅ Implemented |
-| **Requirements Install** | `framework/install_requirements.py` | `cores/project_init_core` | ✅ Implemented |
-| **Project Refresh** | `framework/project_refresh.py` | `cores/modules_controller_core` | ✅ Implemented |
-| **Framework Upgrade** | `framework/upgrade.py` | *None* | ⚪ Deprecated |
-| **Instructions Sync** | `framework/project_init.py` | *None* | 🔴 Missing |
+| **CLI Entry Point** | `framework/cli.py` | `adhd_framework.py` | ✅ Migrated |
+| **Project Creation** | `framework/project_creator.py` | `cores/project_creator_core` | ✅ Migrated |
+| **Module Creation** | `framework/module_creator.py` | `cores/module_creator_core` | ✅ Migrated |
+| **Git/User Utils** | `framework/utils.py` | `cores/creator_common_core` | ✅ Migrated |
+| **Remote Listing** | `framework/listing.py` | *None* | 🔴 Missing |
 
-## 3. Recommendations
+## 4. New Capabilities (Self-Hosting)
 
-1.  **Update `project_init_core`**:
-    *   Add a step to copy `*.instructions.md` files after cloning.
+The following features were **not** present in the Legacy Genesis CLI (they existed only in the *templates* it created). They are now native to the Bootstrapped Framework, enabling self-management:
 
-## 4. CLI Migration Status
+| Feature | Description | Component |
+| :--- | :--- | :--- |
+| **Project Initialization** | Clones modules defined in `init.yaml`. | `cores/project_init_core` |
+| **Requirements Install** | Installs `requirements.txt` from all modules. | `cores/project_init_core` |
+| **Project Refresh** | Runs `refresh.py` scripts for modules. | `cores/modules_controller_core` |
+| **Instruction Sync** | Syncs `*.instructions.md` to `.github/`. | `cores/instruction_core` |
+| **Config Management** | Centralized configuration. | `managers/config_manager` |
+| **Logging** | Centralized logging. | `utils/logger_util` |
 
-The main entry point `adhd_framework.py` has been updated to utilize the new modular cores, replacing the functionality of the legacy `adhd_cli.py`.
+## 5. Recommendations
 
-| Command | Legacy `adhd_cli.py` | New `adhd_framework.py` | Status |
-| :--- | :--- | :--- | :--- |
-| **Init Project** | `init` | `init` | ✅ Migrated |
-| **Refresh Project** | `refresh` | `refresh` | ✅ Migrated |
-| **List Modules** | `list` | `list` | ✅ Migrated |
-| **Module Info** | `info` | `info` | ✅ Migrated |
-| **Install Req.** | `req` | `req` | ✅ Migrated |
-| **Create Project** | *N/A* | `create-project` | ✅ Preserved |
-| **Create Module** | *N/A* | `create-module` | ✅ Preserved |
-| **Upgrade** | `upgrade` | *None* | ⚪ Deprecated |
+1.  **Implement Remote Listing**:
+    *   Create a new core (e.g., `cores/module_listing_core`) or extend `modules_controller_core` to support fetching and listing remote modules from a registry YAML.
+    *   Port the logic from `framework/listing.py`.
+
+2.  **Verify Self-Bootstrapping**:
+    *   Ensure `adhd_framework.py` can successfully bootstrap a fresh environment without `project_init_core` pre-installed (Completed via `bootstrap()` function).
