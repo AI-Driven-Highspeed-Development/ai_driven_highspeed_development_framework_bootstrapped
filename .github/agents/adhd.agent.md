@@ -36,6 +36,7 @@ STOP if you are about to edit a file without reading its instructions first.
     -   `project/data/`: App data storage (use Config-Manager paths).
     -   `cores/`, `managers/`, `utils/`, `plugins/`, `mcps/`: Modules of different types.
     -   `temp_test/`, `temp_debug/`: Temporary folders for testing/debugging.
+    -   `temp_agent_work/`: Temporary workspace for agents, you can write temporary code here during operations, MUST clean up after.
 -   **Entry Points**:
     -   `adhd_cli.py`: Framework CLI (init/refresh/upgrade/install). Use `--help`.
     -   `<app_name>.py`: App entry point. (Name can vary by project).

@@ -52,6 +52,20 @@ def bootstrap():
         except Exception as e:
             print(f"    ❌ Error bootstrapping {path}: {e}")
             sys.exit(1)
+
+    # Install requirements
+    if Path("requirements.txt").exists():
+        print("📦 Installing bootstrap requirements...")
+        try:
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            print("✅ Requirements installed")
+        except Exception as e:
+            print(f"❌ Error installing requirements: {e}")
+            sys.exit(1)
             
     print("✅ Bootstrap complete. Starting Framework...\n")
 
