@@ -20,6 +20,7 @@ BOOTSTRAP_MODULES = {
     "cores/creator_common_core": "https://github.com/AI-Driven-Highspeed-Development/creator_common_core.git",
     "cores/questionary_core": "https://github.com/AI-Driven-Highspeed-Development/questionary_core.git",
     "cores/project_init_core": "https://github.com/AI-Driven-Highspeed-Development/project_init_core.git",
+    "cores/workspace_core": "https://github.com/AI-Driven-Highspeed-Development/workspace_core.git",
 }
 
 def bootstrap():
