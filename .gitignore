@@ -186,7 +186,7 @@ cython_debug/
 #  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
 #  and can be added to the global gitignore or merged into this file. However, if you prefer, 
 #  you could uncomment the following to ignore the entire vscode folder
-# .vscode/
+.vscode/
 
 # Ruff stuff:
 .ruff_cache/
@@ -207,16 +207,17 @@ marimo/_lsp/
 __marimo__/
 
 # ADHD Framework Generated Folders
-#  Keep during template development
-#  Remove when the template is generated from the framework cli
 managers/
 utils/
 plugins/
 cores/
 mcps/
-.adhd_clone_tmp/
 
-temp_test/
-temp_debug/
+.temp_test/
+.temp_debug/
+.temp_agent_work/
 
 .config.backup
+.agent_plan/
+
+# ADHD Framework Custom Ignore Paths
