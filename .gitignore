@@ -218,6 +218,6 @@ mcps/
 .temp_agent_work/
 
 .config.backup
-.agent_plan/
+.github
 
 # ADHD Framework Custom Ignore Paths

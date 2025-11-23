@@ -130,6 +130,12 @@ class ADHDFramework:
         req_parser = subparsers.add_parser('req', aliases=['rq'], help='Install requirements from all requirements.txt files')
         req_parser.set_defaults(func=self.install_requirements)
 
+        # Workspace
+        workspace_parser = subparsers.add_parser('workspace', aliases=['ws'], help='Update VS Code workspace file')
+        workspace_parser.add_argument('--all', action='store_true', help='Include all modules regardless of settings')
+        workspace_parser.add_argument('--ignore-overrides', action='store_true', help='Ignore module-level overrides')
+        workspace_parser.set_defaults(func=self.update_workspace)
+
         args = parser.parse_args()
 
         if not args.command:
@@ -233,6 +239,20 @@ class ADHDFramework:
         from cores.project_init_core.requirements_installer import RequirementsInstaller
         installer = RequirementsInstaller()
         installer.install_all()
+
+    def update_workspace(self, args) -> None:
+        """Update VS Code workspace file."""
+        from cores.modules_controller_core.modules_controller import ModulesController, WorkspaceGenerationMode
+        
+        mode = WorkspaceGenerationMode.DEFAULT
+        if args.all:
+            mode = WorkspaceGenerationMode.INCLUDE_ALL
+        elif args.ignore_overrides:
+            mode = WorkspaceGenerationMode.IGNORE_OVERRIDES
+            
+        controller = ModulesController()
+        path = controller.generate_workspace_file(mode=mode)
+        self.logger.info(f"✅ Workspace file updated at: {path}")
 
 
 if __name__ == "__main__":

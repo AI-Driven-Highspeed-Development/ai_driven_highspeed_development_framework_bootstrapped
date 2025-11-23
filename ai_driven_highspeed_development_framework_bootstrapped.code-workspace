@@ -1,6 +1,48 @@
 {
     "folders": [
         {
+            "path": "./cores/questionary_core"
+        },
+        {
+            "path": "./cores/instruction_core"
+        },
+        {
+            "path": "./cores/project_creator_core"
+        },
+        {
+            "path": "./cores/yaml_reading_core"
+        },
+        {
+            "path": "./cores/modules_controller_core"
+        },
+        {
+            "path": "./cores/workspace_core"
+        },
+        {
+            "path": "./cores/exceptions_core"
+        },
+        {
+            "path": "./cores/module_creator_core"
+        },
+        {
+            "path": "./cores/creator_common_core"
+        },
+        {
+            "path": "./cores/project_init_core"
+        },
+        {
+            "path": "./cores/github_api_core"
+        },
+        {
+            "path": "./managers/temp_files_manager"
+        },
+        {
+            "path": "./managers/config_manager"
+        },
+        {
+            "path": "./utils/logger_util"
+        },
+        {
             "path": "."
         }
     ],
