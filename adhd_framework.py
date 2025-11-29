@@ -28,6 +28,11 @@ def bootstrap():
     Ensures that essential modules are present.
     If not, it clones them from the repositories.
     """
+    # Check for venv
+    if not (hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)):
+        print("❌ Error: Not running in a virtual environment. Please activate a venv before bootstrapping.")
+        sys.exit(1)
+
     missing_modules = []
     for path_str, repo_url in BOOTSTRAP_MODULES.items():
         path = Path(path_str)
@@ -50,6 +55,17 @@ def bootstrap():
                 stderr=subprocess.DEVNULL
             )
             print(f"    ✅ Cloned {path}")
+
+            # Install requirements immediately
+            req_file = path / "requirements.txt"
+            if req_file.exists():
+                subprocess.check_call(
+                    [sys.executable, "-m", "pip", "install", "-r", str(req_file)],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+                print(f"    ✅ Installed requirements for {path}")
+
         except Exception as e:
             print(f"    ❌ Error bootstrapping {path}: {e}")
             sys.exit(1)
