@@ -99,8 +99,6 @@ class ADHDFramework:
         from cores.questionary_core.questionary_core import QuestionaryCore
 
         self.logger = Logger(__class__.__name__)
-        self.cm = ConfigManager()
-        self.config = self.cm.config.main_config
         self.prompter = QuestionaryCore()
 
         try:
