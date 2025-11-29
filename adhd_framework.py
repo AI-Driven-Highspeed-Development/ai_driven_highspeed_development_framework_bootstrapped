@@ -72,16 +72,16 @@ def bootstrap():
 
 bootstrap()
 
-from managers.config_manager import ConfigManager
-from utils.logger_util.logger import Logger
-from cores.github_api_core.api import GithubApi
-from cores.questionary_core.questionary_core import QuestionaryCore
-
 
 class ADHDFramework:
     """Main ADHD Framework CLI class"""
 
     def __init__(self):
+        from managers.config_manager import ConfigManager
+        from utils.logger_util.logger import Logger
+        from cores.github_api_core.api import GithubApi
+        from cores.questionary_core.questionary_core import QuestionaryCore
+
         self.logger = Logger(__class__.__name__)
         self.cm = ConfigManager()
         self.config = self.cm.config.main_config
@@ -93,57 +93,29 @@ class ADHDFramework:
             self.logger.error(f"GitHub CLI setup not complete: {e}")
             sys.exit(1)
 
-    def run(self):
-        parser = argparse.ArgumentParser(
-            description="ADHD Framework CLI - AI-Driven High-speed Development Framework",
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-        )
-        subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    def run(self, args):
+        command_map = {
+            'create-project': self.create_project_proc,
+            'cp': self.create_project_proc,
+            'create-module': self.create_module_proc,
+            'cm': self.create_module_proc,
+            'init': self.init_project,
+            'i': self.init_project,
+            'refresh': self.refresh_project,
+            'r': self.refresh_project,
+            'list': self.list_modules,
+            'ls': self.list_modules,
+            'info': self.show_module_info,
+            'in': self.show_module_info,
+            'req': self.install_requirements,
+            'rq': self.install_requirements,
+            'workspace': self.update_workspace,
+            'ws': self.update_workspace,
+        }
 
-        # Create Project
-        create_project_parser = subparsers.add_parser('create-project', aliases=['cp'], help='Create a new ADHD project')
-        create_project_parser.set_defaults(func=self.create_project_proc)
-
-        # Create Module
-        create_module_parser = subparsers.add_parser('create-module', aliases=['cm'], help='Create a new module')
-        create_module_parser.set_defaults(func=self.create_module_proc)
-
-        # Init
-        init_parser = subparsers.add_parser('init', aliases=['i'], help='Initialize project modules')
-        init_parser.set_defaults(func=self.init_project)
-
-        # Refresh
-        refresh_parser = subparsers.add_parser('refresh', aliases=['r'], help='Refresh project modules')
-        refresh_parser.add_argument('--module', '-m', help='Refresh specific module by name')
-        refresh_parser.set_defaults(func=self.refresh_project)
-
-        # List
-        list_parser = subparsers.add_parser('list', aliases=['ls'], help='List all discovered modules')
-        list_parser.set_defaults(func=self.list_modules)
-
-        # Info
-        info_parser = subparsers.add_parser('info', aliases=['in'], help='Show detailed module information')
-        info_parser.add_argument('--module', '-m', required=True, help='Module name to show information for')
-        info_parser.set_defaults(func=self.show_module_info)
-
-        # Req
-        req_parser = subparsers.add_parser('req', aliases=['rq'], help='Install requirements from all requirements.txt files')
-        req_parser.set_defaults(func=self.install_requirements)
-
-        # Workspace
-        workspace_parser = subparsers.add_parser('workspace', aliases=['ws'], help='Update VS Code workspace file')
-        workspace_parser.add_argument('--all', action='store_true', help='Include all modules regardless of settings')
-        workspace_parser.add_argument('--ignore-overrides', action='store_true', help='Ignore module-level overrides')
-        workspace_parser.set_defaults(func=self.update_workspace)
-
-        args = parser.parse_args()
-
-        if not args.command:
-            parser.print_help()
-            return
-
-        if hasattr(args, 'func'):
-            args.func(args)
+        handler = command_map.get(args.command)
+        if handler:
+            handler(args)
 
     def create_project_proc(self, args) -> None:
         from cores.project_creator_core.project_creation_wizard import run_project_creation_wizard
@@ -256,5 +228,29 @@ class ADHDFramework:
 
 
 if __name__ == "__main__":
-    framework = ADHDFramework()
-    framework.run()
+    parser = argparse.ArgumentParser(
+        description="ADHD Framework CLI - AI-Driven High-speed Development Framework",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+
+    subparsers.add_parser('create-project', aliases=['cp'], help='Create a new ADHD project')
+    subparsers.add_parser('create-module', aliases=['cm'], help='Create a new module')
+    subparsers.add_parser('init', aliases=['i'], help='Initialize project modules')
+    refresh_parser = subparsers.add_parser('refresh', aliases=['r'], help='Refresh project modules')
+    refresh_parser.add_argument('--module', '-m', help='Refresh specific module by name')
+    subparsers.add_parser('list', aliases=['ls'], help='List all discovered modules')
+    info_parser = subparsers.add_parser('info', aliases=['in'], help='Show detailed module information')
+    info_parser.add_argument('--module', '-m', required=True, help='Module name to show information for')
+    subparsers.add_parser('req', aliases=['rq'], help='Install requirements from all requirements.txt files')
+    workspace_parser = subparsers.add_parser('workspace', aliases=['ws'], help='Update VS Code workspace file')
+    workspace_parser.add_argument('--all', action='store_true', help='Include all modules regardless of settings')
+    workspace_parser.add_argument('--ignore-overrides', action='store_true', help='Ignore module-level overrides')
+
+    args = parser.parse_args()
+
+    if not args.command:
+        parser.print_help()
+    else:
+        framework = ADHDFramework()
+        framework.run(args)
