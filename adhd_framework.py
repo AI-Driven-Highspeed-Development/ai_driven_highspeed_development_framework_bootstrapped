@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
+# PYTHON_ARGCOMPLETE_OK
 
 import sys
 import os
 import subprocess
 import argparse
 from pathlib import Path
+
+try:
+    import argcomplete
+except ImportError:
+    argcomplete = None
 
 # -----------------------------------------------------------------------------
 # Self-Bootstrapping Logic
@@ -25,6 +31,32 @@ BOOTSTRAP_MODULES = {
     "cores/workspace_core": "https://github.com/AI-Driven-Highspeed-Development/workspace_core.git",
 }
 
+def _clone_and_install(path: Path, repo_url: str) -> None:
+    """Helper to clone a repo and install its requirements."""
+    print(f"  - Cloning {path}...")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.check_call(
+            ["git", "clone", repo_url, str(path)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        print(f"    ✅ Cloned {path}")
+
+        # Install requirements immediately
+        req_file = path / "requirements.txt"
+        if req_file.exists():
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", "-r", str(req_file)],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            print(f"    ✅ Installed requirements for {path}")
+
+    except Exception as e:
+        print(f"    ❌ Error bootstrapping {path}: {e}")
+        sys.exit(1)
+
 def bootstrap():
     """
     Ensures that essential modules are present.
@@ -35,60 +67,31 @@ def bootstrap():
         print("❌ Error: Not running in a virtual environment. Please activate a venv before bootstrapping.")
         sys.exit(1)
 
-    missing_modules = []
-    for path_str, repo_url in BOOTSTRAP_MODULES.items():
-        path = Path(path_str)
-        if not path.exists():
-            missing_modules.append((path, repo_url))
+    missing_modules = [(Path(p), url) for p, url in BOOTSTRAP_MODULES.items() if not Path(p).exists()]
     
-    if not missing_modules:
-        return
+    if missing_modules:
+        print("🚀 Bootstrapping ADHD Framework...")
+        print(f"Found {len(missing_modules)} missing essential modules.")
 
-    print("🚀 Bootstrapping ADHD Framework...")
-    print(f"Found {len(missing_modules)} missing essential modules.")
+        for path, repo_url in missing_modules:
+            _clone_and_install(path, repo_url)
 
-    for path, repo_url in missing_modules:
-        print(f"  - Cloning {path}...")
-        try:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            subprocess.check_call(
-                ["git", "clone", repo_url, str(path)],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
-            )
-            print(f"    ✅ Cloned {path}")
-
-            # Install requirements immediately
-            req_file = path / "requirements.txt"
-            if req_file.exists():
-                subprocess.check_call(
-                    [sys.executable, "-m", "pip", "install", "-r", str(req_file)],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL
-                )
-                print(f"    ✅ Installed requirements for {path}")
-
-        except Exception as e:
-            print(f"    ❌ Error bootstrapping {path}: {e}")
-            sys.exit(1)
-
-    # Install requirements
+    # Install root requirements
     if Path("requirements.txt").exists():
-        print("📦 Installing bootstrap requirements...")
+        # Check if we need to install (simple check: just do it, pip is fast if satisfied)
+        # Or we could check if modules are missing. For now, let's keep it simple but quiet.
         try:
             subprocess.check_call(
                 [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL
             )
-            print("✅ Requirements installed")
         except Exception as e:
             print(f"❌ Error installing requirements: {e}")
             sys.exit(1)
             
-    print("✅ Bootstrap complete. Starting Framework...\n")
-
-bootstrap()
+    if missing_modules:
+        print("✅ Bootstrap complete. Starting Framework...\n")
 
 
 class ADHDFramework:
@@ -232,18 +235,65 @@ class ADHDFramework:
         """Update VS Code workspace file."""
         from cores.modules_controller_core.modules_controller import ModulesController, WorkspaceGenerationMode
         
+        controller = ModulesController()
+        overrides = {}
+        
         mode = WorkspaceGenerationMode.DEFAULT
         if args.all:
             mode = WorkspaceGenerationMode.INCLUDE_ALL
         elif args.ignore_overrides:
             mode = WorkspaceGenerationMode.IGNORE_OVERRIDES
+
+        if args.module:
+            module = controller.get_module_by_name(args.module)
+            if not module:
+                self.logger.error(f"❌ Module '{args.module}' not found")
+                sys.exit(1)
             
-        controller = ModulesController()
-        path = controller.generate_workspace_file(mode=mode)
+            # Determine current visibility based on mode to toggle it
+            current_visibility = False
+            if mode == WorkspaceGenerationMode.INCLUDE_ALL:
+                current_visibility = True
+            elif mode == WorkspaceGenerationMode.IGNORE_OVERRIDES:
+                current_visibility = module.module_type.shows_in_workspace
+            else:
+                current_visibility = module.shows_in_workspace
+                if current_visibility is None:
+                    current_visibility = module.module_type.shows_in_workspace
+            
+            new_visibility = not current_visibility
+            overrides[module.name] = new_visibility
+            self.logger.info(f"Temporarily toggling workspace visibility for {module.name} to {new_visibility}")
+
+        path = controller.generate_workspace_file(mode=mode, overrides=overrides)
         self.logger.info(f"✅ Workspace file updated at: {path}")
 
 
-if __name__ == "__main__":
+def module_completer(prefix, parsed_args, **kwargs):
+    """Autocomplete module names with type grouping."""
+    # Suppress logging to prevent corrupting shell completion output
+    os.environ["ADHD_LOG_LEVEL"] = "CRITICAL"
+    try:
+        from cores.modules_controller_core.modules_controller import ModulesController
+        controller = ModulesController()
+        report = controller.list_all_modules()
+        
+        # Return modules in 'type/name' format for better organization
+        # e.g. 'managers/config_manager', 'cores/project_init_core'
+        options = []
+        for m in report.modules:
+            # Use plural name for grouping (e.g. 'managers', 'cores')
+            type_name = m.module_type.plural_name.lower()
+            option = f"{type_name}/{m.name}"
+            options.append(option)
+            
+        return [o for o in options if o.startswith(prefix)]
+    except Exception:
+        return []
+
+
+def setup_parser() -> argparse.ArgumentParser:
+    """Configure and return the argument parser."""
     parser = argparse.ArgumentParser(
         description="ADHD Framework CLI - AI-Driven High-speed Development Framework",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -253,16 +303,39 @@ if __name__ == "__main__":
     subparsers.add_parser('create-project', aliases=['cp'], help='Create a new ADHD project')
     subparsers.add_parser('create-module', aliases=['cm'], help='Create a new module')
     subparsers.add_parser('init', aliases=['i'], help='Initialize project modules')
+    
     refresh_parser = subparsers.add_parser('refresh', aliases=['r'], help='Refresh project modules')
-    refresh_parser.add_argument('--module', '-m', help='Refresh specific module by name')
+    refresh_arg = refresh_parser.add_argument('--module', '-m', help='Refresh specific module by name')
+    if argcomplete:
+        refresh_arg.completer = module_completer
+
     subparsers.add_parser('list', aliases=['ls'], help='List all discovered modules')
+    
     info_parser = subparsers.add_parser('info', aliases=['in'], help='Show detailed module information')
-    info_parser.add_argument('--module', '-m', required=True, help='Module name to show information for')
+    info_arg = info_parser.add_argument('--module', '-m', required=True, help='Module name to show information for')
+    if argcomplete:
+        info_arg.completer = module_completer
+
     subparsers.add_parser('req', aliases=['rq'], help='Install requirements from all requirements.txt files')
+    
     workspace_parser = subparsers.add_parser('workspace', aliases=['ws'], help='Update VS Code workspace file')
     workspace_parser.add_argument('--all', action='store_true', help='Include all modules regardless of settings')
     workspace_parser.add_argument('--ignore-overrides', action='store_true', help='Ignore module-level overrides')
+    workspace_arg = workspace_parser.add_argument('--module', '-m', help='Toggle workspace visibility for a specific module')
+    if argcomplete:
+        workspace_arg.completer = module_completer
 
+    if argcomplete:
+        argcomplete.autocomplete(parser)
+        
+    return parser
+
+
+if __name__ == "__main__":
+    # Ensure environment is ready before anything else
+    bootstrap()
+
+    parser = setup_parser()
     args = parser.parse_args()
 
     if not args.command:

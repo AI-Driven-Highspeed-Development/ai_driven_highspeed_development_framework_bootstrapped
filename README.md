@@ -24,36 +24,36 @@ The framework is controlled via the `adhd_framework.py` script.
 
 ### Project Creation
 ```bash
-python adhd_framework.py create-project    # Interactive wizard (alias: cp)
+./adhd_framework.py create-project    # Interactive wizard (alias: cp)
 ```
 
 ### Module Creation
 ```bash
-python adhd_framework.py create-module     # Interactive wizard (alias: cm)
+./adhd_framework.py create-module     # Interactive wizard (alias: cm)
 ```
 
 ### Initialize Project
 ```bash
-python adhd_framework.py init              # Initialize modules from init.yaml (alias: i)
+./adhd_framework.py init              # Initialize modules from init.yaml (alias: i)
 ```
 
 ### Manage Modules
 ```bash
-python adhd_framework.py list              # List all discovered modules (alias: ls)
-python adhd_framework.py refresh           # Refresh all modules (alias: r)
-python adhd_framework.py refresh -m logger # Refresh specific module
-python adhd_framework.py info -m logger    # Show module details (alias: in)
+./adhd_framework.py list              # List all discovered modules (alias: ls)
+./adhd_framework.py refresh           # Refresh all modules (alias: r)
+./adhd_framework.py refresh -m logger # Refresh specific module
+./adhd_framework.py info -m logger    # Show module details (alias: in)
 ```
 
 ### Dependency Management
 ```bash
-python adhd_framework.py req               # Install all requirements.txt files (alias: rq)
+./adhd_framework.py req               # Install all requirements.txt files (alias: rq)
 ```
 
 ### Get Help
 ```bash
-python adhd_framework.py --help            # Show main help
-python adhd_framework.py init --help       # Show init command help
+./adhd_framework.py --help            # Show main help
+./adhd_framework.py init --help       # Show init command help
 ```
 
 ## Core Modules
@@ -103,22 +103,22 @@ The ADHD CLI provides a simple interface to all framework functionality:
 
 ```bash
 # Initialize a new project
-python adhd_framework.py init
+./adhd_framework.py init
 
 # List all discovered modules
-python adhd_framework.py ls
+./adhd_framework.py ls
 
 # Refresh all modules
-python adhd_framework.py r
+./adhd_framework.py r
 
 # Refresh specific module
-python adhd_framework.py r -m config-manager
+./adhd_framework.py r -m config-manager
 
 # Show detailed module information
-python adhd_framework.py in -m config-manager
+./adhd_framework.py in -m config-manager
 
 # Install requirements
-python adhd_framework.py rq
+./adhd_framework.py rq
 ```
 
 ## Configuration
@@ -166,7 +166,7 @@ Install requirements from all `requirements.txt` files found in the project and 
 If you encounter import errors, ensure you're running commands from the project root directory where `adhd_framework.py` is located.
 
 ### Module Not Found
-Use `python adhd_framework.py ls` to see available modules and their exact names.
+Use `./adhd_framework.py ls` to see available modules and their exact names.
 
 ## License
 
@@ -178,23 +178,23 @@ After your project is created using the main ADHD Framework, you can use the inc
 
 ### Initialize Project
 ```bash
-python adhd_cli.py init                    # Initialize with default init.yaml
-python adhd_cli.py init --config my.yaml  # Use custom config file
+./adhd_framework.py init                    # Initialize with default init.yaml
+./adhd_framework.py init --config my.yaml  # Use custom config file
 ```
 
 ### Manage Modules
 ```bash
-python adhd_cli.py list                    # List all discovered modules
-python adhd_cli.py refresh                 # Refresh all modules
-python adhd_cli.py refresh --module logger # Refresh specific module
-python adhd_cli.py info --module logger    # Show module details
+./adhd_framework.py list                    # List all discovered modules
+./adhd_framework.py refresh                 # Refresh all modules
+./adhd_framework.py refresh --module logger # Refresh specific module
+./adhd_framework.py info --module logger    # Show module details
 ```
 
 ### Get Help
 ```bash
-python adhd_cli.py --help                  # Show main help
-python adhd_cli.py init --help             # Show init command help
-python adhd_cli.py refresh --help          # Show refresh command help
+./adhd_framework.py --help                  # Show main help
+./adhd_framework.py init --help             # Show init command help
+./adhd_framework.py refresh --help          # Show refresh command help
 ```
 
 ## Framework Modules
@@ -271,26 +271,26 @@ The ADHD CLI provides a simple interface to all framework functionality:
 
 ```bash
 # Initialize a new project
-python adhd_cli.py init
+./adhd_framework.py init
 
 # Initialize with custom config
-python adhd_cli.py init --config my-config.yaml
+./adhd_framework.py init --config my-config.yaml
 
 # List all discovered modules
-python adhd_cli.py list
+./adhd_framework.py list
 
 # Refresh all modules
-python adhd_cli.py refresh
+./adhd_framework.py refresh
 
 # Refresh specific module
-python adhd_cli.py refresh --module config-manager
+./adhd_framework.py refresh --module config-manager
 
 # Show detailed module information
-python adhd_cli.py info --module config-manager
+./adhd_framework.py info --module config-manager
 
 # Get help
-python adhd_cli.py --help
-python adhd_cli.py init --help
+./adhd_framework.py --help
+./adhd_framework.py init --help
 ```
 
 ## Configuration
@@ -310,7 +310,7 @@ After initialization, your project will have the following structure:
 
 ```
 your-project/
-├── adhd_cli.py           # Main CLI interface
+├── adhd_framework.py     # Main CLI interface
 ├── init.yaml             # Project configuration
 ├── framework/            # Core framework modules
 │   ├── __init__.py
@@ -369,36 +369,36 @@ cp -r /path/to/Default-Project-Template/* .
 nano init.yaml
 
 # 4. Initialize project
-python adhd_cli.py init
+./adhd_framework.py init
 ```
 
 ### Working with Modules
 ```bash
 # See what modules are available
-python adhd_cli.py list
+./adhd_framework.py list
 
 # Get detailed info about a module
-python adhd_cli.py info --module config-manager
+./adhd_framework.py info --module config-manager
 
 # Refresh a specific module after updates
-python adhd_cli.py refresh --module config-manager
+./adhd_framework.py refresh --module config-manager
 
 # Refresh all modules
-python adhd_cli.py refresh
+./adhd_framework.py refresh
 ```
 
 ## Troubleshooting
 
 ### Import Errors
-If you encounter import errors, ensure you're running commands from the project root directory where `adhd_cli.py` is located.
+If you encounter import errors, ensure you're running commands from the project root directory where `adhd_framework.py` is located.
 
 ### Module Not Found
-Use `python adhd_cli.py list` to see available modules and their exact names.
+Use `./adhd_framework.py list` to see available modules and their exact names.
 
 ### Permission Issues
 Make sure the CLI script is executable:
 ```bash
-chmod +x adhd_cli.py
+chmod +x adhd_framework.py
 ```
 
 ## Contributing
