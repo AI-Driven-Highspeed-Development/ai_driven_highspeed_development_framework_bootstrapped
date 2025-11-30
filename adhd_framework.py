@@ -31,6 +31,7 @@ BOOTSTRAP_MODULES = {
     "cores/questionary_core": "https://github.com/AI-Driven-Highspeed-Development/questionary_core.git",
     "cores/project_init_core": "https://github.com/AI-Driven-Highspeed-Development/project_init_core.git",
     "cores/workspace_core": "https://github.com/AI-Driven-Highspeed-Development/workspace_core.git",
+    "cores/instruction_core": "https://github.com/AI-Driven-Highspeed-Development/instruction_core.git",
 }
 
 def _clone_and_install(path: Path, repo_url: str) -> None:
@@ -59,6 +60,21 @@ def _clone_and_install(path: Path, repo_url: str) -> None:
         print(f"    ❌ Error bootstrapping {path}: {e}")
         sys.exit(1)
 
+def ensure_req_file():
+    """Ensure the root requirements.txt file exists."""
+    # Hardcoded minimal requirements
+    reqs = [
+        "PyYAML",
+        "requests",
+        "questionary",
+        "argcomplete"
+    ]
+    req_path = Path("requirements.txt")
+    if not req_path.exists():
+        with req_path.open("w") as f:
+            f.write("\n".join(reqs) + "\n")
+
+
 def bootstrap():
     """
     Ensures that essential modules are present.
@@ -70,6 +86,8 @@ def bootstrap():
         sys.exit(1)
 
     missing_modules = [(Path(p), url) for p, url in BOOTSTRAP_MODULES.items() if not Path(p).exists()]
+
+    ensure_req_file()
     
     if missing_modules:
         print("🚀 Bootstrapping ADHD Framework...")
@@ -94,6 +112,71 @@ def bootstrap():
             
     if missing_modules:
         print("✅ Bootstrap complete. Starting Framework...\n")
+
+    # Ensure script is executable (Linux/macOS)
+    if os.name == 'posix':
+        script_path = Path(__file__)
+        if not os.access(script_path, os.X_OK):
+            try:
+                current_permissions = os.stat(script_path).st_mode
+                os.chmod(script_path, current_permissions | 0o111)
+                print("🔧 Made adhd_framework.py executable.")
+            except Exception as e:
+                print(f"⚠️  Could not make script executable: {e}")
+
+    # Suggest/Configure Tab Completion
+    configure_venv_tab_completion()
+
+
+def configure_venv_tab_completion():
+    """Check and prompt to enable tab completion in venv activation script."""
+    # Only relevant for POSIX (Linux/Mac) bash/zsh environments
+    if os.name != 'posix':
+        return
+
+    # Check if running in a venv
+    if not (hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)):
+        return
+
+    venv_path = Path(sys.prefix)
+    activate_script = venv_path / "bin" / "activate"
+
+    if not activate_script.exists():
+        return
+
+    try:
+        content = activate_script.read_text()
+    except Exception:
+        return
+
+    # Check if already configured
+    marker = "register-python-argcomplete ./adhd_framework.py"
+    if marker in content:
+        return
+
+    # Only prompt if interactive
+    if not sys.stdin.isatty():
+        return
+
+    print("\n💡 Tab completion is not enabled in your venv activation script.")
+    try:
+        response = input("   Do you want to automatically add it to 'bin/activate'? [Y/n] ").strip().lower()
+    except (KeyboardInterrupt, EOFError):
+        print()
+        return
+
+    if response != 'n':
+        try:
+            with activate_script.open("a") as f:
+                f.write(f"\n# ADHD Framework Tab Completion\neval \"$(register-python-argcomplete ./adhd_framework.py)\"\n")
+            print("   ✅ Added tab completion to activation script.")
+            print("   🔄 Please deactivate and reactivate your venv for changes to take effect.")
+        except Exception as e:
+            print(f"   ❌ Failed to update activation script: {e}")
+    else:
+        print(f"   ℹ️  To enable manually, add this line to {activate_script}:")
+        print(f"      eval \"$(register-python-argcomplete ./adhd_framework.py)\"")
+    print()
 
 
 class ADHDFramework:
