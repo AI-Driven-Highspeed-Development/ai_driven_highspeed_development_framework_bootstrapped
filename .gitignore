@@ -206,6 +206,8 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
+
+#### ADHD Framework Custom Ignore Paths ####
 # ADHD Framework Generated Folders
 managers/
 utils/
@@ -220,5 +222,7 @@ mcps/
 .config.backup
 .github/
 
+# Any code-workspace files
+*.code-workspace
 
-# ADHD Framework Custom Ignore Paths
+#### ADHD Framework Custom Ignore Paths END ####
