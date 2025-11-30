@@ -18,6 +18,8 @@ BOOTSTRAP_MODULES = {
     "managers/temp_files_manager": "https://github.com/AI-Driven-Highspeed-Development/temp_files_manager.git",
     "cores/github_api_core": "https://github.com/AI-Driven-Highspeed-Development/github_api_core.git",
     "cores/creator_common_core": "https://github.com/AI-Driven-Highspeed-Development/creator_common_core.git",
+    "cores/module_creator_core": "https://github.com/AI-Driven-Highspeed-Development/module_creator_core.git",
+    "cores/project_creator_core": "https://github.com/AI-Driven-Highspeed-Development/project_creator_core.git",
     "cores/questionary_core": "https://github.com/AI-Driven-Highspeed-Development/questionary_core.git",
     "cores/project_init_core": "https://github.com/AI-Driven-Highspeed-Development/project_init_core.git",
     "cores/workspace_core": "https://github.com/AI-Driven-Highspeed-Development/workspace_core.git",
