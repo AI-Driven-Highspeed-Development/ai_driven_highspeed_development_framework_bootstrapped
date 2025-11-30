@@ -13,8 +13,10 @@ except ImportError:
     argcomplete = None
 
 # -----------------------------------------------------------------------------
-# Self-Bootstrapping Logic
+# Self-Bootstrapping Logic. Self-contained
 # -----------------------------------------------------------------------------
+
+# Hardcoded essential modules' URLs to ensure presence
 BOOTSTRAP_MODULES = {
     "utils/logger_util": "https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git",
     "managers/config_manager": "https://github.com/AI-Driven-Highspeed-Development/Config-Manager.git",
