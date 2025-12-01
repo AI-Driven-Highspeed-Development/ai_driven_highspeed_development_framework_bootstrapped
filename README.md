@@ -290,8 +290,7 @@ Follow the [Setup](#setup) instructions to clone and bootstrap the ADHD Framewor
     ./adhd_framework.py r
     ```
 
-
-### 5. Develop with AI Agents
+### 6. Develop with AI Agents
 
   - Use the built-in ADHD agents to plan, code, review, and manage your project.
   - I can only give some general guidelines here, the project quality ultimately depends on:
@@ -307,7 +306,7 @@ Follow the [Setup](#setup) instructions to clone and bootstrap the ADHD Framewor
   - `HyperAgentSmith` to create them for you!
   - Rinse and repeat!
 
-### 6. Stuck? Tech debt piling up? Smelling delicious spaghetti in your codebase?
+### 7. Stuck? Tech debt piling up? Smelling delicious spaghetti in your codebase?
 
 Try these methods:
 
@@ -330,7 +329,7 @@ Try these methods:
     > That is why **modularity** is important. You can always rebuild from scratch without affecting the rest of the project, And AI agents can help you re-implement the lost functionality extremely rapidly! (But this time watch it closely to avoid repeating the same mistakes!)
 
 
-### 7. Be aware of Limitations
+### 8. Be aware of Limitations
 
   - The ADHD Framework is still in early development. Many modules are experimental and may contain bugs or incomplete features.
 
