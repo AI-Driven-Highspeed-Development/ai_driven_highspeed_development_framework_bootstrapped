@@ -1,4 +1,4 @@
-# ADHD Framework (Bootstrapped)
+# ADHD Framework
 
 This is the bootstrapped version of the ADHD (AI-Driven High-speed Development) Framework, featuring a modular core architecture.
 
@@ -60,6 +60,7 @@ We treat the codebase as a **Structured Knowledge Graph** rather than just text 
 -   **Visual Studio Code** (Required)
     -   *Why?* The framework's `instruction_core` and agent workflows are deeply integrated with VS Code's agent capabilities.
     -   *Note*: While you *can* use other IDEs, you will lose the AI-native context features (agents & instructions) that are the core value proposition of this framework. Support for other IDEs is planned for the future.
+    -   *Recommended Extension*: `samgiz.vscode-kanbn-boards` (Required for **HyperPM** Kanban visualization).
 
 ### 2. Installation
 
@@ -220,7 +221,7 @@ The framework comes with specialized AI agents, each with a distinct role and "p
 | **HyperArchitect** | Lead Developer | The primary builder. Implements features, modifies code, and ensures strict adherence to the ADHD framework's architecture and patterns. |
 | **HyperSanityChecker** | QA & Auditor | Meticulous code reviewer. Audits plans and code for logic flaws, security risks, and architectural violations before implementation. |
 | **HyperIQGuard** | Code Quality Guardian | Identifies and fixes objectively poor coding practices (anti-patterns), redundancy, and inefficiencies. Focuses on pragmatic, safe, local fixes. |
-| **HyperPM** | Project Manager | Manages Kanban boards and planning using **kanbn**. Creates and maintains kanbn boards in `.kanbn/`. |
+| **HyperPM** | Project Manager | Manages Kanban boards and planning using **kanbn**. Creates and maintains kanbn boards in `.kanbn/`. **Requires `samgiz.vscode-kanbn-boards` extension.** |
 | **HyperDayDreamer** | Visionary Architect | Focuses on long-term planning and conceptualization. Documents visions and future possibilities without modifying the codebase. |
 | **HyperAgentSmith** | Agent Creator | Designs, generates, and validates new agent definitions (`.agent.md`). Ensures strict adherence to framework standards and safety protocols. |
 
