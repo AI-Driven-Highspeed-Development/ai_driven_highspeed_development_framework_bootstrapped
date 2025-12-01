@@ -37,6 +37,7 @@ We treat the codebase as a **Structured Knowledge Graph** rather than just text 
 ```
 📦 Project-Root/
 ├── 📄 adhd_framework.py        # Main CLI interface
+├── 📄 app.py                   # Main app entry point (change filename to suit your project)
 ├── 📄 init.yaml                # Project configuration
 ├── 📁 cores/                   # Core system modules
 │   ├── 📁 project_init_core/   # Project initialization & cloning
