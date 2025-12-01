@@ -224,6 +224,121 @@ The framework comes with specialized AI agents, each with a distinct role and "p
 | **HyperDayDreamer** | Visionary Architect | Focuses on long-term planning and conceptualization. Documents visions and future possibilities without modifying the codebase. |
 | **HyperAgentSmith** | Agent Creator | Designs, generates, and validates new agent definitions (`.agent.md`). Ensures strict adherence to framework standards and safety protocols. |
 
+## Typical Workflows
+
+### 1. Install this Framework
+
+Follow the [Setup](#setup) instructions to clone and bootstrap the ADHD Framework.
+
+### 2. Create a New ADHD Project
+
+  ```bash
+  ./adhd_framework.py cp
+  ```
+  - Follow the interactive prompts to set up your new project. 
+
+  - Select the option to create a repository in your GitHub account / organization is recommended.
+
+### 3. Initialize the Project
+
+  ```bash
+  ./adhd_framework.py init
+  ```
+  - This will clone and set up all specified modules from `init.yaml`.
+
+### 4. Plan your modules
+
+  - ADHD Framework is module-centric. Plan out which and what modules you need for your project.
+
+  - `Public Modules Repository` is coming soon with pre-built modules, you will be able to select from a list.
+
+  - For now, you can:
+
+    1. Go to `https://github.com/orgs/AI-Driven-Highspeed-Development/repositories` to shop for modules (WARNING: Many are under development or outdated and may be unstable, this framework is an one man army project after all). Or;
+
+    2. Build your own modules:
+
+        ```bash
+        ./adhd_framework.py cm
+        ```
+
+  - To fully utilize the ADHD Framework, you should aim to:
+  
+    Break your project down into as many small, **single-responsibility modules** as possible. 
+  
+    **Do not create Swiss Army Knife modules that try to do everything!**
+
+  - After created your modules, add their URL(s) to your project's `init.yaml`, under `modules` as a list, and run `./adhd_framework.py init` again to install them.
+
+### 5.Module Management
+
+  - For configuration, each module has its own `.config_template` file that you can edit to add default configuration values, which will be copied to the project's root `.config` file on initialization or refresh.
+    ```bash
+    ./adhd_framework.py r -m managers/config_-_manager
+    # or just refresh all modules when you are lazy
+    ./adhd_framework.py r
+    ```
+    You can also directly edit the project's root `.config` file to override any configuration values.
+
+  - Each module contains its own `instructions.md` file that teaches agents how to work with that specific module. Read [The VS code doc](https://code.visualstudio.com/docs/copilot/customization/custom-instructions) For more information on how to write effective instructions for AI agents, or, just ask the `HyperAgentSmith` agent to help you write one!
+  
+    Then also refresh:
+    ```bash
+    ./adhd_framework.py r -m cores/instruction_core
+    # or 
+    ./adhd_framework.py r
+    ```
+
+
+### 5. Develop with AI Agents
+
+  - Use the built-in ADHD agents to plan, code, review, and manage your project.
+  - I can only give some general guidelines here, the project quality ultimately depends on:
+
+    > **How well you can fundamentally understand and organize your own thoughts, and logically express them to others, human or AI agents.**
+
+  - You can start by asking the:
+  - `HyperDayDreamer` agent to help you brainstorm and document your project vision. Then have the:
+  - `HyperSanityChecker` review it for clarity, sanity, and completeness, before passing it to the:
+  - `HyperPM` agent to create tasks and manage your kanbn board, finally, have the:
+  - `HyperArchitect` implement the features, with
+  - `HyperIQGuard` ensuring code quality along the way. And if you need new agents, just ask:
+  - `HyperAgentSmith` to create them for you!
+  - Rinse and repeat!
+
+### 6. Stuck? Tech debt piling up? Smelling delicious spaghetti in your codebase?
+
+Try these methods:
+
+  - Ask the `HyperSanityChecker` agent to audit your codebase for logic flaws, security risks, and architectural violations.
+
+  - Ask the `HyperIQGuard` agent to identify and fix objectively poor coding practices (anti-patterns), redundancy, and inefficiencies.
+
+  - If nothing works, **NUKE** the affected module(s)!
+
+    1. Delete the module folder(s) from your project.
+
+    2. Remove their URL(s) from `init.yaml` under `modules`.
+
+    3. Run:
+        ```bash
+        ./adhd_framework.py i
+        ```
+       This will set up the remaining modules if needed.
+
+    > That is why **modularity** is important. You can always rebuild from scratch without affecting the rest of the project, And AI agents can help you re-implement the lost functionality extremely rapidly! (But this time watch it closely to avoid repeating the same mistakes!)
+
+
+### 7. Be aware of Limitations
+
+  - The ADHD Framework is still in early development. Many modules are experimental and may contain bugs or incomplete features.
+
+  - Always review and test code generated by AI agents thoroughly.
+
+    > **You are the ultimate decision maker and quality controller, you have the responsibility on the project quality, not the AI agents.**
+
+    > **This is not a vibe coding Framework, objective alignment and safeguarding are always dependent on you.**
+
 
 ## Troubleshooting
 
