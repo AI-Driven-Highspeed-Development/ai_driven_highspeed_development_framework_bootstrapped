@@ -30,6 +30,7 @@ We treat the codebase as a **Structured Knowledge Graph** rather than just text 
 3.  **AI-Native Context**:
     -   Preset agents with specific roles to handle different tasks (e.g., `HyperArchitect`, `HyperSanityChecker`, `HyperIQGuard` etc.).
     -   The framework includes instruction files (`.instructions.md`) that teach agents *how* to use the code they are looking at.
+    -   The `instruction_core` module syncs all agent definitions and instruction files from modules to `.github/` where VS Code's Copilot picks them up automatically.
     -   *Benefit*: Drastically reduces "Objective Misalignment" by providing ground-truth rules alongside the code.
 
 ## Structure
@@ -37,8 +38,10 @@ We treat the codebase as a **Structured Knowledge Graph** rather than just text 
 ```
 📦 Project-Root/
 ├── 📄 adhd_framework.py        # Main CLI interface
-├── 📄 app.py                   # Main app entry point (change filename to suit your project)
+├── 📄 app.py                   # Main app entry point (name it to suit your project)
 ├── 📄 init.yaml                # Project configuration
+├── 📁 project/                 # (Optional) Project-specific files 
+│   ├── 📁 data/                # (Optional) Project data files, conventional location 
 ├── 📁 cores/                   # Core system modules
 │   ├── 📁 project_init_core/   # Project initialization & cloning
 │   ├── 📁 modules_controller_core/ # Module management
@@ -47,13 +50,15 @@ We treat the codebase as a **Structured Knowledge Graph** rather than just text 
 ├── 📁 utils/                   # Utility modules
 ├── 📁 plugins/                 # Plugin modules
 ├── 📁 mcps/                    # Model-Context-Protocol modules
+├── 📁 .agent_plan/             # (Optional) Agent-generated plans and visions
+├── 📄 requirements.txt         # Python dependencies
 └── 📄 README.md                # This file
 ```
 
 ## Setup
 
 ### 1. Prerequisites
--   **Python 3.8+**
+-   **Python 3.9+**
 -   **Git** (Installed and configured)
 -   **GitHub CLI (`gh`)** (Required for cloning modules)
     -   *Run `gh auth login` to authenticate.*
@@ -89,21 +94,22 @@ We treat the codebase as a **Structured Knowledge Graph** rather than just text 
     python adhd_framework.py
     ```
     *Note: This may take a moment to clone all required repositories.*
-    *Note: On Linux/Mac, the script will automatically attempt to make itself executable (`chmod +x`).*
 
-4.  **Enable Tab Completion** (Recommended)
-    The CLI supports tab completion for commands and module names.
-    -   On the first run, the script will prompt you to automatically add completion support to your virtual environment's activation script.
-    -   **Action**: Type `y` when prompted.
-    -   **Apply**: Deactivate and re-activate your virtual environment for changes to take effect.
+4.  **Verify Installation**
 
-    *Note: Also only supported on Linux/Mac at this time. Windows support may not be possible due to shell limitations.*
-
-5.  **Verify Installation**
     Check that everything is running correctly:
+
+    Linux/Mac:
     ```bash
     ./adhd_framework.py list
     ```
+
+    Windows:
+    ```bash
+    python adhd_framework.py list
+    ```
+
+    *Note: On Linux/Mac, the script will automatically attempt to make itself executable (`chmod +x`). Windows not supported.*
 
 ## Quick Start
 
@@ -124,6 +130,8 @@ If you can't run `./adhd_framework.py` directly, (e.g. on Windows), use: `python
 # Show detailed info about a specific module
 ./adhd_framework.py info -m config-manager
 ```
+
+The ADHD Framework supports **Tab Completion**, see [Tips & Tricks](#tips--tricks) for setup instructions.
 
 ## CLI Reference
 
@@ -186,16 +194,37 @@ modules:
 
 ## Module Architecture
 
+### Module Types
+
+Modules are categorized by their role in the system. This separation prevents "Swiss Army Knife" modules and helps agents understand the purpose of each module at a glance.
+
+| Type | Folder | Purpose | Examples |
+| :--- | :--- | :--- | :--- |
+| **Core** | `cores/` | Framework internals. Bootstrapping, module lifecycle, agent sync. Rarely modified by users. | `instruction_core`, `modules_controller_core` |
+| **Manager** | `managers/` | Stateful resource management with lifecycle. Typically singletons that persist configuration or state. | `config_manager`, `temp_files_manager` |
+| **Util** | `utils/` | Stateless helper functions/classes. Pure utilities with no side effects, highly reusable. | `logger_util` |
+| **Plugin** | `plugins/` | Project-specific extensions. When something is *too specific* to be reusable across projects. | `my_app_plugin` |
+| **MCP** | `mcps/` | Model Context Protocol servers. Extends AI agent capabilities with external tools and APIs. | `github_mcp`, `database_mcp` |
+
+> **Why these 5 types?**
+> - Fewer types → Everything becomes a generic "module" (Swiss Army Knife problem)
+> - More types → Analysis paralysis, over-categorization
+> - These 5 cover the spectrum from "framework core" to "project-specific" with clear, non-overlapping boundaries.
+
+### Module Structure
+
 Each module follows a strict structure to ensure compatibility with the framework and agents:
 
 ```
 📁 module_type/                         # i.e. managers / utils / plugins / cores / mcps
 └──📁 module_name/
-    ├── 📁 data/                        # Module-specific data (optional)
-    ├── 📄 __init__.py                  # Python package (optional, enables ✅ Init)
-    ├── 📄 refresh.py                   # Refresh script (optional, enables 🔄 Refresh)  
-    ├── 📄 init.yaml                    # Module configuration (required)
-    ├── 📄 module_name.instructions.md  # Agent instructions (optional)
+    ├── 📁 data/                        # Module-specific data (Optional)
+    ├── 📄 __init__.py                  # Python package (Optional, enables ✅ Init)
+    ├── 📄 refresh.py                   # Refresh script (Optional, enables 🔄 Refresh)  
+    ├── 📄 init.yaml                    # Module configuration (Required)
+    ├── 📄 module_name.instructions.md  # Agent instructions (Optional)
+    ├── 📄 module_name.py               # Main module code (name it to suit your module)
+    ├── 📄 requirements.txt             # Python dependencies for the module
     └── 📄 [other files]                # Module-specific files
 ```
 
@@ -209,8 +238,15 @@ repo_url: "https://github.com/user/repo.git"
 requirements:  # ADHD modules Dependencies, URLs (optional)
   - http://example.com/dependency.git
   - http://example.com/another-dependency.git
-shows_in_workspace: true # Override default visibility
+shows_in_workspace: true # Override default visibility in VS Code multi-root workspace
 ```
+
+### Configuration Management
+
+The `config_manager` module handles project and module configuration:
+-   Each module can have a `.config_template` file with default values.
+-   On refresh, templates are merged into the project's root `.config` file.
+-   See `managers/config_manager/README.md` for detailed usage.
 
 ## Agents
 
@@ -225,11 +261,25 @@ The framework comes with specialized AI agents, each with a distinct role and "p
 | **HyperDayDreamer** | Visionary Architect | Focuses on long-term planning and conceptualization. Documents visions and future possibilities without modifying the codebase. |
 | **HyperAgentSmith** | Agent Creator | Designs, generates, and validates new agent definitions (`.agent.md`). Ensures strict adherence to framework standards and safety protocols. |
 
+### How Agents Work
+
+Agent definitions (`.adhd.agent.md`) and instruction files (`.instructions.md`) are stored in:
+-   `cores/instruction_core/data/agents/` — Framework-provided agents
+-   `cores/instruction_core/data/instructions/` — Framework-wide instructions  
+-   `cores/instruction_core/data/prompts/` — Reusable prompts (coming soon)
+-   `<module_folder>/<module_name>.instructions.md` — Module-specific instructions
+
+When you run `./adhd_framework.py refresh`, the `instruction_core` copies all these files to `.github/instructions/`, `.github/agents/`, and `.github/prompts/`. VS Code's Copilot automatically picks up files from `.github/` for custom instructions.
+
+**To use an agent**: In VS Code Copilot Chat, type `@` followed by the agent name (e.g., `@hyper_architect`).
+
 ## Typical Workflows
 
 ### 1. Install this Framework
 
 Follow the [Setup](#setup) instructions to clone and bootstrap the ADHD Framework.
+
+**NOTE**: Use `python adhd_framework.py` if you can't run `./adhd_framework.py` directly (e.g., on Windows).
 
 ### 2. Create a New ADHD Project
 
@@ -241,6 +291,39 @@ Follow the [Setup](#setup) instructions to clone and bootstrap the ADHD Framewor
   - Select the option to create a repository in your GitHub account / organization is recommended.
 
 ### 3. Initialize the Project
+
+  Go to your newly created project folder by opening it in VS Code:
+
+  1. File -> Open workspace...
+  2. Select the project folder you just created.
+  3. Select the .code-workspace file inside it.
+
+  Then create the .venv for your **NEW** project (**NOT** for this framework repo):
+
+  By terminal:
+
+  Linux/Mac: 
+  ```bash
+  python3 -m venv .venv
+  source .venv/bin/activate  # Linux/Mac
+  ```
+
+  Windows:
+  ```bash
+  python -m venv .venv
+  .venv\Scripts\Activate    # Windows
+  ```
+
+  **OR** via VS Code Command Palette:
+
+  1. Toggle the Command Palette (Linux/Windows: `Ctrl+Shift+P`, Mac: `Cmd+Shift+P`)
+  2. Type and select `Python: Create Environment`
+  3. Select `Venv` as environment type
+  4. Select the suitable Python version (3.9+)
+  5. Select the option to create the environment in the project folder
+  6. Create a new terminal in VS Code to activate the new virtual environment automatically.
+
+  Finally, in the new venv, run:
 
   ```bash
   ./adhd_framework.py init
@@ -255,7 +338,7 @@ Follow the [Setup](#setup) instructions to clone and bootstrap the ADHD Framewor
 
   - For now, you can:
 
-    1. Go to `https://github.com/orgs/AI-Driven-Highspeed-Development/repositories` to shop for modules (WARNING: Many are under development or outdated and may be unstable, this framework is an one man army project after all). Or;
+    1. Go to `https://github.com/orgs/AI-Driven-Highspeed-Development/repositories` to shop for modules (WARNING: Many are under development or outdated and may be unstable, this framework is an one man army project after all 🤣). Or;
 
     2. Build your own modules:
 
@@ -266,29 +349,30 @@ Follow the [Setup](#setup) instructions to clone and bootstrap the ADHD Framewor
   - To fully utilize the ADHD Framework, you should aim to:
   
     Break your project down into as many small, **single-responsibility modules** as possible. 
-  
-    **Do not create Swiss Army Knife modules that try to do everything!**
+      
+      **Do not create Swiss Army Knife modules that try to do everything!**
+
+      > A small example toy scenario:
+      >
+      >>You are building a web app that needs user **authentication**, **data storage**, and **email notifications**.
+      >
+      > Instead of creating one giant "WebApp" module, create three focused modules:
+      > 1. `oauth2_auth_manager` module for handling user authentication.
+      > 2. `mysql_database_manager` module for data storage and retrieval.
+      > 3. `smtp_email_plugin` module for sending email notifications.
+      > 4. Any other modules as needed for specific features...
+      >
+      > **Pro Tip**: Name your modules specifically (e.g., `mysql_database_manager` instead of just `database_manager`). This ensures they are reusable across different projects. If a module *must* be specific to only this project, it is usually best to categorize it as a `plugin`.
+      >
+      > Each module has its own purpose, allowing agents to work on them independently without overwhelming context.
 
   - After created your modules, add their URL(s) to your project's `init.yaml`, under `modules` as a list, and run `./adhd_framework.py init` again to install them.
 
-### 5.Module Management
+### 5. Module Management
 
-  - For configuration, each module has its own `.config_template` file that you can edit to add default configuration values, which will be copied to the project's root `.config` file on initialization or refresh.
-    ```bash
-    ./adhd_framework.py r -m managers/config_-_manager
-    # or just refresh all modules when you are lazy
-    ./adhd_framework.py r
-    ```
-    You can also directly edit the project's root `.config` file to override any configuration values.
+  - **Configuration**: Modules use `.config_template` files for default values, merged into the project's `.config` on refresh. See `managers/config_manager/README.md`.
 
-  - Each module contains its own `instructions.md` file that teaches agents how to work with that specific module. Read [The VS code doc](https://code.visualstudio.com/docs/copilot/customization/custom-instructions) For more information on how to write effective instructions for AI agents, or, just ask the `HyperAgentSmith` agent to help you write one!
-  
-    Then also refresh:
-    ```bash
-    ./adhd_framework.py r -m cores/instruction_core
-    # or 
-    ./adhd_framework.py r
-    ```
+  - **Instructions**: Each module can have a `<module_name>.instructions.md` file to teach agents how to use it. Run `./adhd_framework.py refresh` to sync instructions to `.github/`. See [VS Code Custom Instructions](https://code.visualstudio.com/docs/copilot/customization/custom-instructions) for writing tips, or ask `HyperAgentSmith` to help!
 
 ### 6. Develop with AI Agents
 
@@ -339,6 +423,33 @@ Try these methods:
 
     > **This is not a vibe coding Framework, objective alignment and safeguarding are always dependent on you.**
 
+## Tips & Tricks
+
+### Tab Completion (Linux/Mac)
+
+The CLI supports tab completion for commands and module names:
+1.  On the first run, the script will prompt you to add completion support to your venv's activation script.
+2.  Type `y` when prompted.
+3.  Deactivate and re-activate your virtual environment.
+
+*Note: Windows is not supported due to shell limitations.*
+
+Example usage:
+```bash
+./adhd_framework.py <TAB>  # Auto shows available commands
+./adhd_framework.py info -m <TAB>  # Auto shows available module names
+./adhd_framework.py info -m managers<TAB>  # Auto shows modules starting with "managers"
+./adhd_framework.py info -m managers/c<TAB>  
+# Auto-completes to "managers/config_manager" if it is the only match starting with "c"
+```
+
+### Setting `shows_in_workspace` in `init.yaml`
+
+Controls whether a module appears as a folder in VS Code's multi-root workspace:
+-   `true` — Module folder is visible (default for `managers`, `utils`, `plugins`)
+-   `false` — Module folder is hidden (default for `cores`, `mcps`)
+
+Useful for hiding implementation details from day-to-day development while keeping them accessible.
 
 ## Troubleshooting
 
@@ -347,6 +458,12 @@ If you encounter import errors, ensure you're running commands from the project 
 
 ### Module Not Found
 Use `./adhd_framework.py ls` to see available modules and their exact names.
+
+### Ask for Help
+If you are using this, you probably know the developer personally, just reach out to me on Signal or Whatsapp and tell me my stupid thingy doesn't work 😂
+
+Or, very fortunately, you don't know me personally but somehow found this project and want to reach out, you can open an issue on GitHub to ask for help.
+
 
 ## License
 
