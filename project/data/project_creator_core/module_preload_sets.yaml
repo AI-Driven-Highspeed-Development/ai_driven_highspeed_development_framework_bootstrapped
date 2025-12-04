@@ -7,7 +7,10 @@ always:
 options:
   Default:
     description: The rawest form of freedom with minimal things in it.
-    urls: []
+  HyperPM:
+    description: Adding HyperPM for AI agentic project management!
+    urls:
+      - https://github.com/AI-Driven-Highspeed-Development/hyperpm_core.git
   Webcams:
     description: Webcam control modules
     urls:
