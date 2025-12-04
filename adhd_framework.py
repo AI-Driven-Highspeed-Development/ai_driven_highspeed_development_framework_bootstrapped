@@ -215,6 +215,8 @@ class ADHDFramework:
             'rq': self.install_requirements,
             'workspace': self.update_workspace,
             'ws': self.update_workspace,
+            'update-framework': self.update_framework,
+            'uf': self.update_framework,
         }
 
         handler = command_map.get(args.command)
@@ -353,6 +355,22 @@ class ADHDFramework:
         path = controller.generate_workspace_file(mode=mode, overrides=overrides)
         self.logger.info(f"✅ Workspace file updated at: {path}")
 
+    def update_framework(self, args) -> None:
+        """Update adhd_framework.py from the source repository."""
+        from cores.project_init_core.framework_updater import FrameworkUpdater
+        
+        try:
+            updater = FrameworkUpdater()
+            dry_run = getattr(args, 'dry_run', False)
+            
+            if args.all:
+                updater.update_all(dry_run=dry_run)
+            else:
+                updater.update_framework_file(dry_run=dry_run)
+        except Exception as e:
+            self.logger.error(f"❌ Failed to update framework: {e}")
+            sys.exit(1)
+
 
 def module_completer(prefix, parsed_args, **kwargs):
     """Autocomplete module names with type grouping."""
@@ -409,6 +427,10 @@ def setup_parser() -> argparse.ArgumentParser:
     workspace_arg = workspace_parser.add_argument('--module', '-m', help='Toggle workspace visibility for a specific module')
     if argcomplete:
         workspace_arg.completer = module_completer
+
+    update_framework_parser = subparsers.add_parser('update-framework', aliases=['uf'], help='Update adhd_framework.py from source repository')
+    update_framework_parser.add_argument('--all', '-a', action='store_true', help='Also update requirements.txt')
+    update_framework_parser.add_argument('--dry-run', '-n', action='store_true', help='Check for updates without applying')
 
     if argcomplete:
         argcomplete.autocomplete(parser)
