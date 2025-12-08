@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # PYTHON_ARGCOMPLETE_OK
 
+import difflib
 import sys
 import os
 import subprocess
@@ -261,7 +262,14 @@ class ADHDFramework:
                 controller.run_module_refresh_script(module)
                 self.logger.info(f"✅ Module {args.module} refreshed!")
             else:
-                self.logger.error(f"❌ Module {args.module} not found.")
+                # Suggest similar module names
+                report = controller.list_all_modules()
+                all_names = [m.name for m in report.modules]
+                suggestions = difflib.get_close_matches(args.module, all_names, n=3, cutoff=0.4)
+                if suggestions:
+                    self.logger.error(f"❌ Module '{args.module}' not found. Did you mean: {', '.join(suggestions)}?")
+                else:
+                    self.logger.error(f"❌ Module '{args.module}' not found. Use 'adhd list' to see available modules.")
                 sys.exit(1)
         else:
             self.logger.info("Refreshing all modules...")
@@ -292,7 +300,14 @@ class ADHDFramework:
         module = controller.get_module_by_name(args.module)
         
         if not module:
-            self.logger.error(f"❌ Module '{args.module}' not found")
+            # Suggest similar module names
+            report = controller.list_all_modules()
+            all_names = [m.name for m in report.modules]
+            suggestions = difflib.get_close_matches(args.module, all_names, n=3, cutoff=0.4)
+            if suggestions:
+                self.logger.error(f"❌ Module '{args.module}' not found. Did you mean: {', '.join(suggestions)}?")
+            else:
+                self.logger.error(f"❌ Module '{args.module}' not found. Use 'adhd list' to see available modules.")
             sys.exit(1)
 
         print(f"\n📦 MODULE INFORMATION: {module.name}")
@@ -334,7 +349,14 @@ class ADHDFramework:
         if args.module:
             module = controller.get_module_by_name(args.module)
             if not module:
-                self.logger.error(f"❌ Module '{args.module}' not found")
+                # Suggest similar module names
+                report = controller.list_all_modules()
+                all_names = [m.name for m in report.modules]
+                suggestions = difflib.get_close_matches(args.module, all_names, n=3, cutoff=0.4)
+                if suggestions:
+                    self.logger.error(f"❌ Module '{args.module}' not found. Did you mean: {', '.join(suggestions)}?")
+                else:
+                    self.logger.error(f"❌ Module '{args.module}' not found. Use 'adhd list' to see available modules.")
                 sys.exit(1)
             
             # Determine current visibility based on mode to toggle it
