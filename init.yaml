@@ -16,5 +16,6 @@ modules:
 - https://github.com/AI-Driven-Highspeed-Development/workspace_core.git
 - https://github.com/AI-Driven-Highspeed-Development/vscode_kanbn_mcp.git
 - https://github.com/AI-Driven-Highspeed-Development/hyperpm_core.git
-
+- https://github.com/AI-Driven-Highspeed-Development/adhd_mcp.git
+- https://github.com/AI-Driven-Highspeed-Development/infinite_prompt_util.git
 template_repo: https://github.com/AI-Driven-Highspeed-Development/Default-Project-Template.git
